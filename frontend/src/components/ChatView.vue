@@ -178,7 +178,14 @@ const formatLastSeen = (timestamp) => {
 </script>
 
 <style scoped>
-/* добавляем стили для модалки и кнопки */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary);
+}
+
+/* Шапка чата */
 .chat-header {
   flex-shrink: 0;
   display: flex;
@@ -187,9 +194,52 @@ const formatLastSeen = (timestamp) => {
   padding: 12px 20px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-light);
-  position: relative;
 }
 
+.avatar-small {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.avatar-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder-small {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info {
+  flex: 1;
+}
+
+.info .name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.info .status {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Кнопка настроек чата */
 .chat-settings-btn {
   margin-left: auto;
   background: none;
@@ -197,86 +247,238 @@ const formatLastSeen = (timestamp) => {
   font-size: 1.5rem;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-radius: 50%;
-  transition: background 0.2s;
-}
-.chat-settings-btn:hover {
-  background: var(--hover-bg);
+  transition: background 0.2s, color 0.2s;
+  line-height: 1;
 }
 
+.chat-settings-btn:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+/* Основная панель (список пользователей + сообщения) */
+.main-panel {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+/* Левая панель со списком пользователей */
+.users-panel {
+  width: 320px;
+  border-right: 1px solid var(--border-light);
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* Правая панель сообщений */
+.messages-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* фон задаётся динамически через :style в шаблоне */
+  background-color: var(--bg-tertiary);
+  background-size: cover;
+  background-position: center;
+  transition: background 0.3s;
+}
+
+/* Поле ввода сообщения */
+.message-input {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-light);
+  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
+}
+
+.message-input input {
+  flex: 1;
+  padding: 12px 18px;
+  border: 1px solid var(--border-light);
+  border-radius: 30px;
+  font-size: 0.95rem;
+  outline: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.message-input input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.message-input input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.message-input button {
+  padding: 10px 24px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+
+.message-input button:hover {
+  background: var(--accent-light);
+  transform: scale(1.02);
+}
+
+.message-input button:active {
+  transform: scale(0.98);
+}
+
+/* Заглушка, когда чат не выбран */
+.no-chat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-size: 1rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Модальное окно настроек фона */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(2px);
 }
+
 .modal {
   background: var(--bg-primary);
-  border-radius: 16px;
+  border-radius: 20px;
   padding: 24px;
-  min-width: 300px;
-  max-width: 400px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  min-width: 320px;
+  max-width: 420px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border-light);
 }
+
 .modal h3 {
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   color: var(--text-primary);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
 .bg-options {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
+
 .color-options {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
 }
+
 .color-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   border: 2px solid var(--border-light);
   cursor: pointer;
-  transition: transform 0.1s;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
+
 .color-btn:hover {
   transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.custom-bg {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .upload-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 12px 16px;
   background: var(--accent);
   color: white;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s;
+  border: none;
 }
+
+.upload-btn:hover {
+  background: var(--accent-light);
+}
+
 .reset-btn {
   background: none;
   border: 1px solid var(--border-light);
-  padding: 8px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
   color: var(--text-primary);
   cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.2s;
 }
+
+.reset-btn:hover {
+  background: var(--hover-bg);
+}
+
 .close-btn {
-  margin-top: 20px;
+  margin-top: 24px;
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-light);
-  border-radius: 8px;
+  border-radius: 12px;
   color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: var(--hover-bg);
 }
 </style>

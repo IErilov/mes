@@ -28,19 +28,17 @@ html, body, #app {
 [data-theme='dark'] {
   --bg-primary: #0b141a;
   --bg-secondary: #111b21;
-  --bg-tertiary: #1e2a32;
+  --bg-tertiary: #1e2a32;          /* фон чата по умолчанию */
   --text-primary: #e9edef;
   --text-secondary: #8696a0;
   --border-light: #222e35;
   --accent: #00a884;
   --accent-light: #00a884;
-  --message-own: #005c4b;
-  --message-other: #1e2a32;
+  --message-own: #005c4b;          /* насыщенный зелёный */
+  --message-other: #2a373f;        /* светлее фона, заметный */
   --sidebar-bg: #111b21;
   --hover-bg: #202c33;
   --shadow: 0 2px 5px rgba(0,0,0,0.2);
-  --pattern-color: color-mix(in srgb, var(--accent) 30%, transparent);
-  --pattern-glow: color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .messages-panel {
