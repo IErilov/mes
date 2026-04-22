@@ -1,28 +1,28 @@
+version: '3.8'
 services:
-  - type: web
-    name: sparkly-backend
-    runtime: docker
-    plan: free
-    repo: https://github.com/ТВОЙ_ГИТХАБ_НИК/ТВОЙ_РЕПОЗИТОРИЙ
-    branch: main
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: .
-    envVars:
-      - key: DATABASE_PATH
-        value: /app/data/messenger.db
-    disk:
-      name: sparkly-db
-      mountPath: /app/data
-      sizeGB: 1
-    
-  - type: web
-    name: sparkly-frontend
-    runtime: docker
-    plan: free
-    repo: https://github.com/ТВОЙ_ГИТХАБ_НИК/ТВОЙ_РЕПОЗИТОРИЙ
-    branch: main
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: .
-    envVars:
-      - key: VITE_API_URL
-        value: https://sparkly-backend.onrender.com
+  backend:
+    build: ./backend
+    container_name: messenger-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    environment:
+      - DATABASE_PATH=/app/data/messenger.db
+    networks:
+      - messenger-network
+
+  frontend:
+    build: ./frontend
+    container_name: messenger-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - messenger-network
+
+networks:
+  messenger-network:
+    driver: bridge
